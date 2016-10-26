@@ -4,14 +4,14 @@ from __future__ import absolute_import
 import click
 
 from mgship import mgship
-from mgship.destination import console
+from mgship.destination import csv
 
 
 @click.command()
 def main(args=None):
     """Console script for mgship"""
 
-    mgship.Archive(console.Destination()).ship()
+    mgship.Archive(csv.Destination()).ship()
 
 
 if __name__ == "__main__":
