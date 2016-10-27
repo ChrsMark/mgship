@@ -12,7 +12,8 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'Click>=6.0',
     'attrs>=16.0',
-    'requests==2.11.1'
+    'requests==2.11.1',
+    'validate-email==1.3',
 ]
 
 test_requirements = [

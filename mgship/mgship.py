@@ -8,6 +8,7 @@ from functools import wraps
 from mgship.api import Client
 from mgship.events import mg_past_events
 from mgship.util import is_past
+from mgship.email import is_email
 from mgship.log import logger
 
 
@@ -29,6 +30,7 @@ class Archive(object):
     """Ship all existing events."""
     dest = attr.ib()
     begin = attr.ib(default=None, validator=mg_field_validator(is_past))
+    recipient = attr.ib(default=None, validator=mg_field_validator(is_email))
     _client = attr.ib(default=attr.Factory(Client), repr=False)
     _filtered_params = ['dest', '_client']
 

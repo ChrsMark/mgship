@@ -7,7 +7,7 @@ import logging
 
 from mgship import mgship
 from mgship.destination import csv, json
-from mgship.cliparam import DateTime, Loglevel
+from mgship.cliparam import DateTime, Loglevel, Email
 from mgship.util import utctimestamp, is_past
 from mgship.log import logger
 
@@ -39,6 +39,8 @@ def to_timestamp(ctx, param, value):
 @click.option('--begin', default=None, type=DateTime(),
               callback=to_timestamp,
               help='when to start archiving, as unix timestamp')
+@click.option('--recipient', default=None, type=Email(),
+              help='email address of recipient')
 def archive(format, *args, **kwargs):
     dest = csv.Destination() if format == 'csv' else json.Destination()
     mgship.Archive(dest, *args, **kwargs).ship()

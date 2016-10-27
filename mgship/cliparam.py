@@ -2,14 +2,14 @@
 """Custom parameter types for CLI."""
 from __future__ import absolute_import
 
+import click
 import logging
 
-from click import ParamType, Choice
-
 from mgship.util import fromtimestamp
+from mgship.email import is_email
 
 
-class DateTime(ParamType):
+class DateTime(click.ParamType):
     """Custom DateTime parameter type for the CLI.
 
     Currently only UNIX timestamps are supported as input.  Float values, with
@@ -27,7 +27,7 @@ class DateTime(ParamType):
             self.fail("{} is not a valid timestamp.".format(value))
 
 
-class Loglevel(Choice):
+class Loglevel(click.Choice):
     _LEVEL_NAMES = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
     name = "Log level"
 
@@ -41,3 +41,17 @@ class Loglevel(Choice):
                 return getattr(logging, value)
         except AttributeError:
             self.fail("Unknown log level {}".format(value))
+
+
+class Email(click.ParamType):
+    """Validate an email address."""
+    name = "Email"
+
+    def convert(self, value, param, ctx):
+        value = super(Email, self).convert(value, param, ctx)
+        try:
+            if value is not None:
+                is_email(value)
+                return value
+        except ValueError as e:
+            self.fail("Invalid email: {}".format(e))
