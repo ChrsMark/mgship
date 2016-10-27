@@ -3,8 +3,9 @@ from __future__ import absolute_import
 import sys
 import csv
 
-
 from contextlib import contextmanager
+
+from mgship.log import logger
 
 __all__ = ['Destination']
 
@@ -24,8 +25,11 @@ def print_events():
 
 
 def make_sink():
-    sink = print_events()
-    next(sink)
-    yield sink
+    try:
+        sink = print_events()
+        next(sink)
+        yield sink
+    except IOError:
+        logger.exception("Couldn't write output")
 
 Destination = contextmanager(make_sink)

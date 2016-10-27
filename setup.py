@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -28,11 +28,7 @@ setup(
     author="Konstantinos Koukopoulos",
     author_email='koukopoulos@gmail.com',
     url='https://github.com/kouk/mgship',
-    packages=[
-        'mgship',
-    ],
-    package_dir={'mgship':
-                 'mgship'},
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'mgship=mgship.cli:main'
