@@ -6,7 +6,7 @@ import attr
 from functools import wraps
 
 from mgship.api import Client
-from mgship.events import mg_past_events
+from mgship.events import mg_past_events, mg_poll_events
 from mgship.util import is_past
 from mgship.email import is_email
 from mgship.log import logger
@@ -30,6 +30,7 @@ class Archive(object):
     """Ship all existing events."""
     dest = attr.ib()
     begin = attr.ib(default=None, validator=mg_field_validator(is_past))
+    event = attr.ib(default=None)
     recipient = attr.ib(default=None, validator=mg_field_validator(is_email))
     _client = attr.ib(default=attr.Factory(Client), repr=False)
     _filtered_params = ['dest', '_client']
@@ -55,3 +56,26 @@ class Archive(object):
 @attr.s
 class Monitor(object):
     """Monitor current events."""
+    dest = attr.ib()
+    begin = attr.ib(default=None)
+    sleep = attr.ib(default=None)
+    recipient = attr.ib(default=None, validator=mg_field_validator(is_email))
+    _client = attr.ib(default=attr.Factory(Client), repr=False)
+    _filtered_params = ['dest', '_client']
+
+    @classmethod
+    def _filter_params(self, attr, value):
+        if attr.name in self._filtered_params or value is None:
+            return False
+        return True
+
+    def _iter_sink(self, sink):
+        kwargs = attr.asdict(self, filter=self._filter_params)
+        logger.info("starting monitoring ({})".format(kwargs))
+        for event in mg_poll_events(client=self._client, **kwargs):
+            yield sink.send(event)
+
+    def ship(self):
+        with self.dest as sink:
+            for _ in self._iter_sink(sink):
+                pass

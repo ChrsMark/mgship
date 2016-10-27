@@ -39,11 +39,28 @@ def to_timestamp(ctx, param, value):
 @click.option('--begin', default=None, type=DateTime(),
               callback=to_timestamp,
               help='when to start archiving, as unix timestamp')
+@click.option('--event', default=None, type=str,
+              help='event type')
 @click.option('--recipient', default=None, type=Email(),
               help='email address of recipient')
 def archive(format, *args, **kwargs):
     dest = csv.Destination() if format == 'csv' else json.Destination()
     mgship.Archive(dest, *args, **kwargs).ship()
+
+
+@main.command()
+@click.option('--format', default='csv', type=click.Choice(['json', 'csv']),
+              help='the output format')
+@click.option('--sleep', default=None, type=int,
+              help='how much to wait before repeating requests')
+@click.option('--begin', default=None, type=DateTime(),
+              callback=to_timestamp,
+              help='when to start polling, as unix timestamp')
+@click.option('--recipient', default=None, type=Email(),
+              help='email address of recipient')
+def monitor(format, *args, **kwargs):
+    dest = csv.Destination() if format == 'csv' else json.Destination()
+    mgship.Monitor(dest, *args, **kwargs).ship()
 
 
 if __name__ == "__main__":

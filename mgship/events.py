@@ -50,6 +50,8 @@ def mg_poll_events(client=None, max_age=1800, sleep=900, rewind=None,
 
     if 'begin' not in kwargs:
         begin = kwargs['begin'] = utctimestamp(timeago(seconds=rewind))
+    else:
+        begin = kwargs['begin']
 
     url = events_url(ascending="yes", **kwargs)
 
