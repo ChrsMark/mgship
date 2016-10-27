@@ -13,7 +13,7 @@ requirements = [
     'Click>=6.0',
     'attrs>=16.0',
     'requests==2.11.1',
-    'validate-email==1.3',
+    'email-validator==1.0.1',
 ]
 
 test_requirements = [
