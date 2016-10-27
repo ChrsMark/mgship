@@ -7,7 +7,7 @@ import calendar
 from datetime import datetime, timedelta
 
 __all__ = ['utctimestamp', 'timenow', 'timeago', 'fromtimestamp',
-           'validate_past']
+           'is_past']
 
 
 def utctimestamp(now=None):
@@ -28,7 +28,7 @@ def timeago(**kwargs):
     return timenow() - timedelta(**kwargs)
 
 
-def validate_past(value):
+def is_past(value):
     """Validator for timestamps in the past.
 
     Raises ValueError if value is not a timestamp that represents

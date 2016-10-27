@@ -8,7 +8,7 @@ import logging
 from mgship import mgship
 from mgship.destination import csv, json
 from mgship.cliparam import DateTime, Loglevel
-from mgship.util import utctimestamp, validate_past
+from mgship.util import utctimestamp, is_past
 from mgship.log import logger
 
 
@@ -26,7 +26,7 @@ def to_timestamp(ctx, param, value):
     try:
         value = utctimestamp(value)
         if ctx.info_name == 'archive':
-            validate_past(value)
+            is_past(value)
         return value
     except (TypeError, ValueError) as e:
         logger.debug("bad timestamp parameter", exc_info=True)

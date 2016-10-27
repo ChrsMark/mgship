@@ -3,19 +3,32 @@
 from __future__ import absolute_import
 import attr
 
+from functools import wraps
+
 from mgship.api import Client
 from mgship.events import mg_past_events
-from mgship.util import validate_past
+from mgship.util import is_past
 from mgship.log import logger
+
+
+def mg_field_validator(wrapped):
+    """Convert a simple validator method to a attr.ib validator.
+
+    Given a method which accepts a value and possibly raises ValueError
+    create a attr compatible validator that accepts empty values.
+    """
+    @attr.validators.optional
+    @wraps(wrapped)
+    def wrapper(*args, **kwargs):
+        return wrapped(*args[2:], **kwargs)
+    return wrapper
 
 
 @attr.s
 class Archive(object):
     """Ship all existing events."""
     dest = attr.ib()
-    begin = attr.ib(default=None,
-                    validator=attr.validators.optional(
-                        lambda i, a, v: validate_past(v)))
+    begin = attr.ib(default=None, validator=mg_field_validator(is_past))
     _client = attr.ib(default=attr.Factory(Client), repr=False)
     _filtered_params = ['dest', '_client']
 
