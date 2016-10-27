@@ -6,6 +6,7 @@ import csv
 from contextlib import contextmanager
 
 from mgship.log import logger
+from mgship.data.event import get_recipient
 
 __all__ = ['Destination']
 
@@ -17,9 +18,10 @@ def print_events():
         event = yield eid
         envelope = event.get('envelope', {})
         writer.writerow([
+            event.get('id', ''),
             ','.join(event.get('tags', [])),
             envelope.get('sender', ''),
-            envelope.get('targets', ''),
+            get_recipient(event) or '',
             event.get('event', ''),
             event.get('timestamp', '')])
 
