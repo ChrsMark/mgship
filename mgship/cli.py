@@ -2,6 +2,7 @@
 """MgShip CLI classes."""
 from __future__ import absolute_import
 
+import os
 import click
 import logging
 
@@ -41,6 +42,8 @@ def to_timestamp(ctx, param, value):
 @click.option('--recipient', default=None, type=Email(),
               help='email address of recipient')
 def main(log_level, format, past, output, *args, **kwargs):
+    output = os.fdopen(output.fileno(), 'wb', 0)
+
     if log_level is not None:
         logging.basicConfig(level=log_level)
     dest = csv.Destination if format == 'csv' else json.Destination
