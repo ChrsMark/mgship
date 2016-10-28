@@ -31,6 +31,7 @@ class Archive(object):
     dest = attr.ib()
     begin = attr.ib(default=None, validator=mg_field_validator(is_past))
     event = attr.ib(default=None)
+    sleep = attr.ib(default=None)
     recipient = attr.ib(default=None, validator=mg_field_validator(is_email))
     _client = attr.ib(default=attr.Factory(Client), repr=False)
     _filtered_params = ['dest', '_client']
@@ -58,6 +59,7 @@ class Monitor(object):
     """Monitor current events."""
     dest = attr.ib()
     begin = attr.ib(default=None)
+    event = attr.ib(default=None)
     sleep = attr.ib(default=None)
     recipient = attr.ib(default=None, validator=mg_field_validator(is_email))
     _client = attr.ib(default=attr.Factory(Client), repr=False)

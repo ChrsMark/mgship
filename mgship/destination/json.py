@@ -9,16 +9,19 @@ from contextlib import contextmanager
 __all__ = ['Destination']
 
 
-def print_events():
+def print_events(file):
     eid = None
     while True:
         event = yield eid
-        print json.dumps(event)
+        json.dump(event, file, indent=2)
 
 
-def make_sink():
-    sink = print_events()
-    next(sink)
-    yield sink
+def make_sink(file=sys.stdout):
+    try:
+        sink = print_events(file)
+        next(sink)
+        yield sink
+    finally:
+        file.flush()
 
 Destination = contextmanager(make_sink)

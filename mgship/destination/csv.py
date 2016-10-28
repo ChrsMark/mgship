@@ -11,9 +11,9 @@ from mgship.data.event import get_recipient
 __all__ = ['Destination']
 
 
-def print_events():
+def print_events(file):
     eid = None
-    writer = csv.writer(sys.stdout)
+    writer = csv.writer(file)
     while True:
         event = yield eid
         envelope = event.get('envelope', {})
@@ -26,12 +26,14 @@ def print_events():
             event.get('timestamp', '')])
 
 
-def make_sink():
+def make_sink(file=sys.stdout):
     try:
-        sink = print_events()
+        sink = print_events(file)
         next(sink)
         yield sink
     except IOError:
         logger.exception("Couldn't write output")
+    finally:
+        file.flush()
 
 Destination = contextmanager(make_sink)

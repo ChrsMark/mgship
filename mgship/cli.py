@@ -12,14 +12,6 @@ from mgship.util import utctimestamp, is_past
 from mgship.log import logger
 
 
-@click.group()
-@click.option('--log-level', default=None, type=Loglevel())
-def main(log_level=None):
-    """Console script for mgship"""
-    if log_level is not None:
-        logging.basicConfig(level=log_level)
-
-
 def to_timestamp(ctx, param, value):
     if value is None:
         return None
@@ -33,34 +25,29 @@ def to_timestamp(ctx, param, value):
         raise click.BadParameter(unicode(e))
 
 
-@main.command()
+@click.command()
+@click.option('--log-level', default=None, type=Loglevel())
 @click.option('--format', default='csv', type=click.Choice(['json', 'csv']),
               help='the output format')
-@click.option('--begin', default=None, type=DateTime(),
-              callback=to_timestamp,
-              help='when to start archiving, as unix timestamp')
-@click.option('--event', default=None, type=str,
-              help='event type')
-@click.option('--recipient', default=None, type=Email(),
-              help='email address of recipient')
-def archive(format, *args, **kwargs):
-    dest = csv.Destination() if format == 'csv' else json.Destination()
-    mgship.Archive(dest, *args, **kwargs).ship()
-
-
-@main.command()
-@click.option('--format', default='csv', type=click.Choice(['json', 'csv']),
-              help='the output format')
+@click.option('--past', is_flag=True,
+              help='search past events instead of new ones.')
+@click.option('--output', default='-', type=click.File('wb'))
+@click.option('--event', default=None, type=str, help='event type')
 @click.option('--sleep', default=None, type=int,
               help='how much to wait before repeating requests')
 @click.option('--begin', default=None, type=DateTime(),
               callback=to_timestamp,
-              help='when to start polling, as unix timestamp')
+              help='when to start the process, as unix timestamp')
 @click.option('--recipient', default=None, type=Email(),
               help='email address of recipient')
-def monitor(format, *args, **kwargs):
-    dest = csv.Destination() if format == 'csv' else json.Destination()
-    mgship.Monitor(dest, *args, **kwargs).ship()
+def main(log_level, format, past, output, *args, **kwargs):
+    if log_level is not None:
+        logging.basicConfig(level=log_level)
+    dest = csv.Destination if format == 'csv' else json.Destination
+    if past is True:
+        mgship.Archive(dest(output), *args, **kwargs).ship()
+    else:
+        mgship.Monitor(dest(output), *args, **kwargs).ship()
 
 
 if __name__ == "__main__":
