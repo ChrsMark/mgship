@@ -22,3 +22,18 @@ def get_recipient(event):
     if 'to' in headers:
         return headers['to']
     return event.get('recipient')
+
+
+def get_subject(event):
+    """Get the subject related to this event."""
+    message = event.get('message', {})
+    headers = message.get('headers', {})
+    if 'subject' in headers:
+        return headers['subject']
+
+
+def get_size(event):
+    """Get the size related to this event."""
+    message = event.get('message', {})
+    if 'size' in message:
+        return message['size']

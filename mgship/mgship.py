@@ -32,6 +32,7 @@ class Archive(object):
     begin = attr.ib(default=None, validator=mg_field_validator(is_past))
     event = attr.ib(default=None)
     sleep = attr.ib(default=None)
+    filter = attr.ib(default=None)
     recipient = attr.ib(default=None, validator=mg_field_validator(is_email))
     _client = attr.ib(default=attr.Factory(Client), repr=False)
     _filtered_params = ['dest', '_client']
@@ -45,6 +46,9 @@ class Archive(object):
     def _iter_sink(self, sink):
         kwargs = attr.asdict(self, filter=self._filter_params)
         logger.info("starting archive ({})".format(kwargs))
+        if 'filter' in kwargs:
+            field, value = kwargs.pop('filter').split("=", 1)
+            kwargs[field] = value
         for event in mg_past_events(client=self._client, **kwargs):
             yield sink.send(event)
 
@@ -61,6 +65,7 @@ class Monitor(object):
     begin = attr.ib(default=None)
     event = attr.ib(default=None)
     sleep = attr.ib(default=None)
+    filter = attr.ib(default=None)
     recipient = attr.ib(default=None, validator=mg_field_validator(is_email))
     _client = attr.ib(default=attr.Factory(Client), repr=False)
     _filtered_params = ['dest', '_client']
@@ -74,6 +79,9 @@ class Monitor(object):
     def _iter_sink(self, sink):
         kwargs = attr.asdict(self, filter=self._filter_params)
         logger.info("starting monitoring ({})".format(kwargs))
+        if 'filter' in kwargs:
+            field, value = kwargs.pop('filter').split("=", 1)
+            kwargs[field] = value
         for event in mg_poll_events(client=self._client, **kwargs):
             yield sink.send(event)
 

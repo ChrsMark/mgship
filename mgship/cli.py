@@ -41,6 +41,8 @@ def to_timestamp(ctx, param, value):
               help='when to start the process, as unix timestamp')
 @click.option('--recipient', default=None, type=Email(),
               help='email address of recipient')
+@click.option('--filter', default=None,
+              help='key value filters')
 def main(log_level, format, past, output, *args, **kwargs):
     output = os.fdopen(output.fileno(), 'wb', 0)
 

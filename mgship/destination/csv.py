@@ -6,7 +6,8 @@ import csv
 from contextlib import contextmanager
 
 from mgship.log import logger
-from mgship.data.event import get_recipient
+from mgship.data.event import (
+    get_recipient, get_subject, get_size)
 
 __all__ = ['Destination']
 
@@ -23,7 +24,9 @@ def print_events(file):
             envelope.get('sender', ''),
             get_recipient(event) or '',
             event.get('event', ''),
-            event.get('timestamp', '')])
+            event.get('timestamp', ''),
+            get_size(event),
+            get_subject(event)])
 
 
 def make_sink(file=sys.stdout):
